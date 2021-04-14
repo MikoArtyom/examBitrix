@@ -1,15 +1,17 @@
 <?php
-AddEventHandler("iblock", "OnBeforeIBlockElementUpdate", Array("EX2", "EX2_50"));
-AddEventHandler("main", "OnEpilog", Array("EX2", "EX2_93"));
+AddEventHandler("iblock", "OnBeforeIBlockElementUpdate", array("EX2", "EX2_50"));
+AddEventHandler("main", "OnEpilog", array("EX2", "EX2_93"));
 AddEventHandler("main", "OnBeforeEventAdd", array("EX2", "EX2_51"));
+AddEventHandler("main", "OnBuildGlobalMenu", array("EX2", "EX2_95"));
 
 IncludeModuleLangFile(__FILE__);
 
 class EX2
 {
-	function EX2_50(&$arFields){
-		if ($arFields["IBLOCK_ID"] == ID_IBLOCK_PROD){
-			if ($arFields["ACTIVE"] == "N"){
+	function EX2_50(&$arFields)
+	{
+		if ($arFields["IBLOCK_ID"] == ID_IBLOCK_PROD) {
+			if ($arFields["ACTIVE"] == "N") {
 				$arSelect = array(
 					"ID",
 					"IBLOCK_ID",
@@ -20,13 +22,13 @@ class EX2
 					"IBLOCK_ID" => ID_IBLOCK_PROD,
 					"ID" => $arFields["ID"]
 				);
-				$result = CIBlockElement::GetList(array(), $arFilter,false, false, $arSelect);
+				$result = CIBlockElement::GetList(array(), $arFilter, false, false, $arSelect);
 
 				$arItems = $result->Fetch();
 
-				if ($arItems["SHOW_COUNTER"] > MAX_COUNT){
+				if ($arItems["SHOW_COUNTER"] > MAX_COUNT) {
 					global $APPLICATION;
-					$APPLICATION->ThrowException(GetMessage("ERROR_MSG"). $arItems["SHOW_COUNTER"]);
+					$APPLICATION->ThrowException(GetMessage("ERROR_MSG") . $arItems["SHOW_COUNTER"]);
 					return false;
 
 				}
@@ -34,9 +36,9 @@ class EX2
 		}
 	}
 
-	function EX2_93 ()
+	function EX2_93()
 	{
-		if (defined("ERROR_404") && ERROR_404 == "Y"){
+		if (defined("ERROR_404") && ERROR_404 == "Y") {
 			global $APPLICATION;
 			CEventLog::Add(
 				array(
@@ -54,47 +56,12 @@ class EX2
 		}
 	}
 
-//	function EX2_51(&$event, &$arFields){
-//		if ($event == "FEEDBACK_FROM"){
-//			global $USER;
-//			if ($USER->IsAuthorized()){
-//				$arFields["AUTHOR"] = GetMessage("AUTH",
-//					array(
-//						"#ID#" => $USER->GetID(),
-//						"#LOGIN" => $USER->GetLogin(),
-//						"#NAME#" => $USER->GetFirstName(),
-//						"FROM_NAME" => $arFields["AUTHOR"]
-//					)
-//				);
-//			}
-//			else{
-//				$arFields["AUTHOR"] = GetMessage("NOT_AUTH",
-//					array(
-//						"FROM_NAME" => $arFields["AUTHOR"]
-//					)
-//				);
-//			}
-//
-//			CEventLog::Add(
-//				array(
-//					"SEVERITY" => "SECURITY",
-//					"AUDIT_TYPE_ID" => "REPLACEMENT",
-//					"MODULE_ID" => "main",
-//					"ITEM_ID" => $event,
-//					"DESCRIPTION" => GetMessage("REPLACEMENT", ["AUTHOR" => $arFields["AUTHOR"]]),
-//				)
-//			);
-//
-//		}
-//	}
 
 	function EX2_51(&$event, &$lid, &$arFields)
 	{
-		if ($event == "FEEDBACK_FORM")
-		{
+		if ($event == "FEEDBACK_FORM") {
 			global $USER;
-			if ($USER->isAuthorized())
-			{
+			if ($USER->isAuthorized()) {
 				$arFields["AUTHOR"] = GetMessage("AUTH",
 					[
 						"#ID#" => $USER->GetID(),
@@ -103,9 +70,7 @@ class EX2
 						"#FORM_NAME#" => $arFields["AUTHOR"]
 					]
 				);
-			}
-			else
-			{
+			} else {
 				$arFields["AUTHOR"] = GetMessage("NOT_AUTH",
 					[
 						"#FORM_NAME#" => $arFields["AUTHOR"]
@@ -122,7 +87,23 @@ class EX2
 				)
 			);
 		}
+	}
 
+	function EX2_95(&$aGlobalMenu, &$aModuleMenu)
+	{
+		global $USER;
+		if (in_array(MANAGED_GROUP, $USER->GetUserGroupArray())) {
+			foreach ($aGlobalMenu as $key => $value) {
+				if ($key != "global_menu_content") {
+					unset($aGlobalMenu[$key]);
+				}
+			}
+			foreach ($aModuleMenu as $key => $value) {
+				if ($value["items_id"] != "menu_iblock_/news") {
+					unset($aModuleMenu[$key]);
+				}
+			}
+		}
 	}
 
 
