@@ -3,11 +3,13 @@ AddEventHandler("iblock", "OnBeforeIBlockElementUpdate", array("EX2", "EX2_50"))
 AddEventHandler("main", "OnEpilog", array("EX2", "EX2_93"));
 AddEventHandler("main", "OnBeforeEventAdd", array("EX2", "EX2_51"));
 AddEventHandler("main", "OnBuildGlobalMenu", array("EX2", "EX2_95"));
+AddEventHandler("main", "OnPageStart", array("EX2", "EX2_94"));
 
 IncludeModuleLangFile(__FILE__);
 
 class EX2
 {
+
 	function EX2_50(&$arFields)
 	{
 		if ($arFields["IBLOCK_ID"] == ID_IBLOCK_PROD) {
@@ -106,5 +108,41 @@ class EX2
 		}
 	}
 
+	function EX2_94()
+	{
+		global $APPLICATION;
+		$curPage = $APPLICATION->GetCurPage();
+		if (\Bitrix\Main\Loader::includeModule("iblock"))
+		{
+			$arSelect = array(
+				"IBLOCK_ID",
+				"ID",
+				"PROPERTY_TITLE",
+				"PROPERTY_DESCRIPTION"
+			);
+			$arFilter = array(
+				"IBLOCK_ID" => IBLOCK_META,
+				"NAME" => $curPage
+			);
+
+			$ob = CIBlockElement::GetList(
+				[],
+				$arFilter,
+				false,
+				false,
+				$arSelect
+			);
+
+			if ($arRes = $ob->Fetch())
+			{
+				$APPLICATION->SetPageProperty("title", $arRes["PROPERTY_TITLE_VALUE"]);
+				$APPLICATION->SetPageProperty("description", $arRes["PROPERTY_DESCRIPTION_VALUE"]);
+			}
+		}
+
+
+
+
+	}
 
 }
