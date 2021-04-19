@@ -7,20 +7,9 @@ $APPLICATION->SetTitle("simplecomp");
 	Array(
 		"CACHE_TIME" => "3600",
 		"CACHE_TYPE" => "A",
+		"DETAIL_TEMPLATE_LINK" => "catalog_exam/#SECTION_ID#/#ELEMENT_CODE#",
 		"NEWS_IBLOCK_ID" => "1",
 		"PRODUCTS_IBLOCK_ID" => "2",
 		"PROPERTY_CODE" => "UF_NEWS_LINK"
 	)
-);?><br>
-<?$APPLICATION->IncludeComponent(
-	"ex2:simplecomptype2.exam",
-	"",
-	Array(
-		"CACHE_TIME" => "3600",
-		"CACHE_TYPE" => "A",
-		"CLASSIFIER_IBLOCK_ID" => "7",
-		"DETAIL_TEMPLATE" => "/product/#SECTION_ID#/#ELEMENT_ID#/",
-		"PRODUCTS_IBLOCK_ID" => "2",
-		"PROPERTY_CODE" => "FIRMS"
-	)
-);?><?require($_SERVER["DOCUMENT_ROOT"]."/bitrix/footer.php");?>
+);?><br><?require($_SERVER["DOCUMENT_ROOT"]."/bitrix/footer.php");?>

@@ -42,7 +42,6 @@ if ($this->StartResultCache()) {
 	?>
 	<?
 	while ($arItem = $resultSection->GetNext()) {
-//			echo "<pre>".htmlspecialchars(print_r($arItem))."</pre>";
 		if ($arItem["ELEMENT_CNT"] > 0) {
 			$arSectionAll[$arItem["ID"]] = array(
 				"NAME" => $arItem["NAME"],
@@ -87,6 +86,7 @@ if ($this->StartResultCache()) {
 	$arSelect = array(
 		"ID",
 		"NAME",
+		"CODE",
 		"IBLOCK_SECTION_ID",
 		"PROPERTY_PRICE",
 		"PROPERTY_MATERIAL",
@@ -98,8 +98,12 @@ if ($this->StartResultCache()) {
 		"ACTIVE" => "Y",
 		"SECTION_ID" => array_keys($arSectionAll)
 	);
+	$arSort = array(
+		"NAME" => "asc",
+		"SORT" => "asc"
+	);
 	$resultProducts = CIBlockElement::GetList(
-		false,
+		$arSort,
 		$arFilter,
 		false,
 		false,
@@ -113,7 +117,11 @@ if ($this->StartResultCache()) {
 			"PRICE" => $arItemProd["PROPERTY_PRICE_VALUE"],
 			"MATERIAL" => $arItemProd["PROPERTY_MATERIAL_VALUE"],
 			"ARTNUMBER" => $arItemProd["PROPERTY_ARTNUMBER_VALUE"],
-			""
+			"LINK" => str_replace(
+				array("#SECTION_ID#", "#ELEMENT_CODE#", "#ELEMENT_ID#"),
+				array($arItemProd["IBLOCK_SECTION_ID"], $arItemProd["CODE"], $arItemProd["ID"]),
+				$arParams["DETAIL_TEMPLATE_LINK"]
+			).".php"
 		);
 		foreach ($arSectionAll[$arItemProd["IBLOCK_SECTION_ID"]]["NEWS"] as $arNewsId){
 			$arNewsAll[$arNewsId]["PRODUCTS"][] = $arItemProd["ID"];
@@ -122,8 +130,6 @@ if ($this->StartResultCache()) {
 				$arNewsAll[$arNewsId]["SECTIONS"][] = $arItemProd["IBLOCK_SECTION_ID"];
 			}
 		}
-
-
 
 	}
 

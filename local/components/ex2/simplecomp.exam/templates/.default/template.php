@@ -20,6 +20,7 @@
 				<?=$arResult["ALL_PRODUCTS"][$arProd]["PRICE"]?> -
 				<?=$arResult["ALL_PRODUCTS"][$arProd]["MATERIAL"]?> -
 				<?=$arResult["ALL_PRODUCTS"][$arProd]["ARTNUMBER"]?>
+				(<?=$arResult["ALL_PRODUCTS"][$arProd]["LINK"]?>)
 			</li>
 		<?endforeach;?>
 	</ul>

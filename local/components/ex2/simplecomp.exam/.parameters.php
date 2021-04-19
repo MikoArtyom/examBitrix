@@ -15,7 +15,11 @@ $arComponentParameters = array(
 			"TYPE" => "STRING"
 		),
 		"CACHE_TIME" => array("DEFAULT" => 3600),
-
+		"DETAIL_TEMPLATE_LINK" =>array(
+			"NAME" => GetMessage("NAME_TEMPLATE_LINK_FOR_DETAIL_VIEW"),
+			"DEFAULT" => "catalog_exam/#SECTION_ID#/#ELEMENT_CODE#",
+//			"VARIABLES" => array("ELEMENT_CODE", "SECTION_ID"),
+		)
 	)
 );
 
