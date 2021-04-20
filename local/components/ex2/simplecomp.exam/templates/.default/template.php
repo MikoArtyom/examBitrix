@@ -1,4 +1,11 @@
 <?if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED !== true) die(); ?>
+
+<?if (isset($arResult["FILTER_LINK"])):?>
+	<p><?=GetMessage("SIMPLECOMP_EXAM2_FILTER_TITLE")?><a href="<?=$arResult["FILTER_LINK"]?>"><?=$arResult["FILTER_LINK"]?></a></p>
+<?endif;?>
+
+---
+
 <p><b><?=GetMessage("SIMPLECOMP_EXAM2_CAT_TITLE")?></b></p>
 <ul>
 <?foreach ($arResult["ITEMS"] as $arItem):?>

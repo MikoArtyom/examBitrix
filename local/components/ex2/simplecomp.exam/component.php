@@ -10,7 +10,11 @@ if (!Loader::includeModule("iblock")) {
 	return;
 }
 
-if ($this->StartResultCache()) {
+if ($this->StartResultCache(false, array(isset($_GET["F"])))) {
+	if (isset($_GET["F"]))
+	{
+		$this->AbortResultCache();
+	}
 
 	if (!$iblockPoduct = (int)$arParams["PRODUCTS_IBLOCK_ID"]) return false;
 	if (!$iblockNews = (int)$arParams["NEWS_IBLOCK_ID"]) return false;
@@ -98,6 +102,21 @@ if ($this->StartResultCache()) {
 		"ACTIVE" => "Y",
 		"SECTION_ID" => array_keys($arSectionAll)
 	);
+
+	if (isset($_GET["F"])){
+		$arFilter[] = array(
+			"LOGIC" => "OR",
+			array(
+				"<=PROPERTY_PRICE" => 1700,
+				"PROPERTY_MATERIAL" => "Дерево, ткань"
+			),
+			array(
+				"<PROPERTY_PRICE" => 1500,
+				"PROPERTY_MATERIAL" => "Металл, пластик"
+			)
+		);
+	}
+
 	$arSort = array(
 		"NAME" => "asc",
 		"SORT" => "asc"
@@ -138,6 +157,8 @@ if ($this->StartResultCache()) {
 	$arResult["ALL_PRODUCTS"] = $arProductAll;
 	$arResult["ALL_SECTIONS"] = $arSectionAll;
 	$arResult["COUNT_PRODUCTS"] = count($arProductAll);
+
+	$arResult["FILTER_LINK"] = $APPLICATION->GetCurPage()."?F=Y";
 
 	$this->setResultCacheKeys(array("COUNT_PRODUCTS"));
 
