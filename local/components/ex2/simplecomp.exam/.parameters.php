@@ -1,5 +1,8 @@
 <?if(!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true)die();?>
 <?php
+if (!CModule::IncludeModule("iblock"))
+	return;
+
 $arComponentParameters = array(
 	"PARAMETERS" => array(
 		"PRODUCTS_IBLOCK_ID" => array(
@@ -18,8 +21,20 @@ $arComponentParameters = array(
 		"DETAIL_TEMPLATE_LINK" =>array(
 			"NAME" => GetMessage("NAME_TEMPLATE_LINK_FOR_DETAIL_VIEW"),
 			"DEFAULT" => "catalog_exam/#SECTION_ID#/#ELEMENT_CODE#",
-//			"VARIABLES" => array("ELEMENT_CODE", "SECTION_ID"),
-		)
+		),
+		"NEWS_COUNT" =>array(
+			"NAME" => GetMessage("NAME_NEWS_COUNT_ON_PAGE"),
+			"TYPE" => "STRING",
+			"DEFAULT" => "2"
+		),
 	)
 );
 
+CIBlockParameters::AddPagerSettings(
+	$arComponentParameters,
+	GetMessage("T_IBLOCK_DESC_PAGES_NEWS"),
+	true,
+	true,
+	true,
+	$arCurrentValues["PAGER_BASE_LINK_ENABLE"] === "Y"
+);

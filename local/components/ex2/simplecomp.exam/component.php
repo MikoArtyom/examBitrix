@@ -10,7 +10,16 @@ if (!Loader::includeModule("iblock")) {
 	return;
 }
 
-if ($this->StartResultCache(false, array(isset($_GET["F"])))) {
+$arParams["NEWS_COUNT"] = intval($arParams["NEWS_COUNT"]);
+if ($arParams["NEWS_COUNT"] <= 0)
+	$arParams["NEWS_COUNT"] = 20;
+
+$arNavParams = array(
+	"nPageSize" => $arParams["NEWS_COUNT"]
+);
+$arNavigation = CDBResult::GetNavParams($arNavParams);
+
+if ($this->StartResultCache(false, array($arNavigation, isset($_GET["F"])))) {
 	if (isset($_GET["F"])) {
 		$this->AbortResultCache();
 	}
@@ -71,7 +80,7 @@ if ($this->StartResultCache(false, array(isset($_GET["F"])))) {
 		array(),
 		$arFilter,
 		false,
-		false,
+		$arNavParams,
 		$arSelect
 	);
 	while ($arItemNews = $resultNews->GetNext()) {
@@ -82,6 +91,15 @@ if ($this->StartResultCache(false, array(isset($_GET["F"])))) {
 			"PRODUCTS" => array()
 		);
 	}
+	$arResult["NAV_STRING"] = $resultNews->GetPageNavString(
+		$arParams["PAGER_TITLE"],
+		$arParams["PAGER_TEMPLATE"],
+		$arParams["PAGER_SHOW_ALWAYS"],
+		$this
+	);
+	$arResult["NAV_CACHED_DATA"] = null;
+	$arResult["NAV_RESULT"] = $resultNews;
+	$arResult["NAV_PARAM"] = null;
 
 	$arProductAll = array();
 
@@ -139,36 +157,37 @@ if ($this->StartResultCache(false, array(isset($_GET["F"])))) {
 			array("SECTION_BUTTONS" => false, "SESSID" => false)
 		);
 
-		if ($maxPrice < $arItemProd["PROPERTY_PRICE_VALUE"]){
+		if ($maxPrice < $arItemProd["PROPERTY_PRICE_VALUE"]) {
 			$maxPrice = $arItemProd["PROPERTY_PRICE_VALUE"];
 		}
-		if ($minPrice > $arItemProd["PROPERTY_PRICE_VALUE"])
-		{
+		if ($minPrice > $arItemProd["PROPERTY_PRICE_VALUE"]) {
 			$minPrice = $arItemProd["PROPERTY_PRICE_VALUE"];
 		}
 
-			$arProductAll[$arItemProd["ID"]] = array(
-				"NAME" => $arItemProd["NAME"],
-				"PRICE" => $arItemProd["PROPERTY_PRICE_VALUE"],
-				"MATERIAL" => $arItemProd["PROPERTY_MATERIAL_VALUE"],
-				"ARTNUMBER" => $arItemProd["PROPERTY_ARTNUMBER_VALUE"],
-				"LINK" => str_replace(
-						array("#SECTION_ID#", "#ELEMENT_CODE#", "#ELEMENT_ID#"),
-						array($arItemProd["IBLOCK_SECTION_ID"], $arItemProd["CODE"], $arItemProd["ID"]),
-						$arParams["DETAIL_TEMPLATE_LINK"]
-					) . ".php",
-				"EDIT_LINK" => $arButtons["edit"]["edit_element"]["ACTION_URL"],
-				"DELETE_LINK" => $arButtons["edit"]["delete_element"]["ACTION_URL"],
-			);
+		$arProductAll[$arItemProd["ID"]] = array(
+			"NAME" => $arItemProd["NAME"],
+			"PRICE" => $arItemProd["PROPERTY_PRICE_VALUE"],
+			"MATERIAL" => $arItemProd["PROPERTY_MATERIAL_VALUE"],
+			"ARTNUMBER" => $arItemProd["PROPERTY_ARTNUMBER_VALUE"],
+			"LINK" => str_replace(
+					array("#SECTION_ID#", "#ELEMENT_CODE#", "#ELEMENT_ID#"),
+					array($arItemProd["IBLOCK_SECTION_ID"], $arItemProd["CODE"], $arItemProd["ID"]),
+					$arParams["DETAIL_TEMPLATE_LINK"]
+				) . ".php",
+			"EDIT_LINK" => $arButtons["edit"]["edit_element"]["ACTION_URL"],
+			"DELETE_LINK" => $arButtons["edit"]["delete_element"]["ACTION_URL"],
+		);
 		foreach ($arSectionAll[$arItemProd["IBLOCK_SECTION_ID"]]["NEWS"] as $arNewsId) {
-			$arNewsAll[$arNewsId]["PRODUCTS"][] = $arItemProd["ID"];
-			if (!in_array($arItemProd["IBLOCK_SECTION_ID"], $arNewsAll[$arNewsId]["SECTIONS"])) {
-				$arNewsAll[$arNewsId]["SECTIONS"][] = $arItemProd["IBLOCK_SECTION_ID"];
+			if (isset($arNewsAll[$arNewsId])) {
+				$arNewsAll[$arNewsId]["PRODUCTS"][] = $arItemProd["ID"];
+				if (!in_array($arItemProd["IBLOCK_SECTION_ID"], $arNewsAll[$arNewsId]["SECTIONS"])) {
+					$arNewsAll[$arNewsId]["SECTIONS"][] = $arItemProd["IBLOCK_SECTION_ID"];
+				}
 			}
+
 		}
 
 	}
-
 
 	$arResult["ITEMS"] = $arNewsAll;
 	$arResult["ALL_PRODUCTS"] = $arProductAll;
