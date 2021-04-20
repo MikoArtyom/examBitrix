@@ -11,8 +11,7 @@ if (!Loader::includeModule("iblock")) {
 }
 
 if ($this->StartResultCache(false, array(isset($_GET["F"])))) {
-	if (isset($_GET["F"]))
-	{
+	if (isset($_GET["F"])) {
 		$this->AbortResultCache();
 	}
 
@@ -102,7 +101,7 @@ if ($this->StartResultCache(false, array(isset($_GET["F"])))) {
 		"SECTION_ID" => array_keys($arSectionAll)
 	);
 
-	if (isset($_GET["F"])){
+	if (isset($_GET["F"])) {
 		$arFilter[] = array(
 			"LOGIC" => "OR",
 			array(
@@ -128,8 +127,11 @@ if ($this->StartResultCache(false, array(isset($_GET["F"])))) {
 		$arSelect
 	);
 
-	while ($arItemProd = $resultProducts->GetNext())
-	{
+	$maxPrice = 0;
+	$minPrice = 99999999;
+
+
+	while ($arItemProd = $resultProducts->GetNext()) {
 		$arButtons = CIBlock::GetPanelButtons(
 			$iblockPoduct,
 			$arItemProd["ID"],
@@ -137,24 +139,30 @@ if ($this->StartResultCache(false, array(isset($_GET["F"])))) {
 			array("SECTION_BUTTONS" => false, "SESSID" => false)
 		);
 
+		if ($maxPrice < $arItemProd["PROPERTY_PRICE_VALUE"]){
+			$maxPrice = $arItemProd["PROPERTY_PRICE_VALUE"];
+		}
+		if ($minPrice > $arItemProd["PROPERTY_PRICE_VALUE"])
+		{
+			$minPrice = $arItemProd["PROPERTY_PRICE_VALUE"];
+		}
 
-		$arProductAll[$arItemProd["ID"]] = array(
-			"NAME" => $arItemProd["NAME"],
-			"PRICE" => $arItemProd["PROPERTY_PRICE_VALUE"],
-			"MATERIAL" => $arItemProd["PROPERTY_MATERIAL_VALUE"],
-			"ARTNUMBER" => $arItemProd["PROPERTY_ARTNUMBER_VALUE"],
-			"LINK" => str_replace(
-				array("#SECTION_ID#", "#ELEMENT_CODE#", "#ELEMENT_ID#"),
-				array($arItemProd["IBLOCK_SECTION_ID"], $arItemProd["CODE"], $arItemProd["ID"]),
-				$arParams["DETAIL_TEMPLATE_LINK"]
-			).".php",
-			"EDIT_LINK" => $arButtons["edit"]["edit_element"]["ACTION_URL"],
-			"DELETE_LINK" => $arButtons["edit"]["delete_element"]["ACTION_URL"],
-		);
-		foreach ($arSectionAll[$arItemProd["IBLOCK_SECTION_ID"]]["NEWS"] as $arNewsId){
+			$arProductAll[$arItemProd["ID"]] = array(
+				"NAME" => $arItemProd["NAME"],
+				"PRICE" => $arItemProd["PROPERTY_PRICE_VALUE"],
+				"MATERIAL" => $arItemProd["PROPERTY_MATERIAL_VALUE"],
+				"ARTNUMBER" => $arItemProd["PROPERTY_ARTNUMBER_VALUE"],
+				"LINK" => str_replace(
+						array("#SECTION_ID#", "#ELEMENT_CODE#", "#ELEMENT_ID#"),
+						array($arItemProd["IBLOCK_SECTION_ID"], $arItemProd["CODE"], $arItemProd["ID"]),
+						$arParams["DETAIL_TEMPLATE_LINK"]
+					) . ".php",
+				"EDIT_LINK" => $arButtons["edit"]["edit_element"]["ACTION_URL"],
+				"DELETE_LINK" => $arButtons["edit"]["delete_element"]["ACTION_URL"],
+			);
+		foreach ($arSectionAll[$arItemProd["IBLOCK_SECTION_ID"]]["NEWS"] as $arNewsId) {
 			$arNewsAll[$arNewsId]["PRODUCTS"][] = $arItemProd["ID"];
-			if (!in_array($arItemProd["IBLOCK_SECTION_ID"], $arNewsAll[$arNewsId]["SECTIONS"]))
-			{
+			if (!in_array($arItemProd["IBLOCK_SECTION_ID"], $arNewsAll[$arNewsId]["SECTIONS"])) {
 				$arNewsAll[$arNewsId]["SECTIONS"][] = $arItemProd["IBLOCK_SECTION_ID"];
 			}
 		}
@@ -167,29 +175,31 @@ if ($this->StartResultCache(false, array(isset($_GET["F"])))) {
 	$arResult["ALL_SECTIONS"] = $arSectionAll;
 	$arResult["COUNT_PRODUCTS"] = count($arProductAll);
 
-	$arResult["FILTER_LINK"] = $APPLICATION->GetCurPage()."?F=Y";
+	$arResult["FILTER_LINK"] = $APPLICATION->GetCurPage() . "?F=Y";
 
 	$arButtons = CIBlock::GetPanelButtons(
 		$iblockPoduct,
 		0,
 		0,
-		array("SECTION_BUTTONS"=>false, "SESSID"=>false)
+		array("SECTION_BUTTONS" => false, "SESSID" => false)
 	);
 	$arResult["ADD_ELEMENT_LINK"] = $arButtons["edit"]["add_element"]["ACTION_URL"];
 	$res = CIBlock::GetByID($iblockPoduct);
 	$ar_res = $res->GetNext();
 	$this->AddIncludeAreaIcon(
 		array(
-			"URL" => "/bitrix/admin/iblock_element_admin.php?IBLOCK_ID=".$iblockPoduct."&type=".$ar_res["IBLOCK_TYPE_ID"]."&lang=ru&find_el_y=Y&clear_filter=Y&apply_filter=Y",
+			"URL" => "/bitrix/admin/iblock_element_admin.php?IBLOCK_ID=" . $iblockPoduct . "&type=" . $ar_res["IBLOCK_TYPE_ID"] . "&lang=ru&find_el_y=Y&clear_filter=Y&apply_filter=Y",
 			"TITLE" => GetMessage("IB_IN_ADMIN_PANEL"),
 			"IN_PARAMS_MENU" => true
 		)
 	);
 
+	$arResult["MIN_PRICE"] = $minPrice;
+	$arResult["MAX_PRICE"] = $maxPrice;
 
-	$this->setResultCacheKeys(array("COUNT_PRODUCTS"));
+	$this->setResultCacheKeys(array("COUNT_PRODUCTS", "MIN_PRICE", "MAX_PRICE"));
 
 	$this->includeComponentTemplate();
 }
-$APPLICATION->SetTitle(GetMessage("SET_TITLE") . $arResult["COUNT_PRODUCTS"] );
+$APPLICATION->SetTitle(GetMessage("SET_TITLE") . $arResult["COUNT_PRODUCTS"]);
 ?>
