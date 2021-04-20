@@ -19,9 +19,8 @@ if ($this->StartResultCache(false, array(isset($_GET["F"])))) {
 	if (!$iblockPoduct = (int)$arParams["PRODUCTS_IBLOCK_ID"]) return false;
 	if (!$iblockNews = (int)$arParams["NEWS_IBLOCK_ID"]) return false;
 	if (!$propertyCode = trim($arParams["PROPERTY_CODE"])) return false;
-//		{
-//			return false;
-//		}
+
+	$arResult["IBLOCK_ID"] = $iblockPoduct;
 
 	$arSelect = array(
 		"ID",
@@ -131,6 +130,14 @@ if ($this->StartResultCache(false, array(isset($_GET["F"])))) {
 
 	while ($arItemProd = $resultProducts->GetNext())
 	{
+		$arButtons = CIBlock::GetPanelButtons(
+			$iblockPoduct,
+			$arItemProd["ID"],
+			0,
+			array("SECTION_BUTTONS" => false, "SESSID" => false)
+		);
+
+
 		$arProductAll[$arItemProd["ID"]] = array(
 			"NAME" => $arItemProd["NAME"],
 			"PRICE" => $arItemProd["PROPERTY_PRICE_VALUE"],
@@ -140,7 +147,9 @@ if ($this->StartResultCache(false, array(isset($_GET["F"])))) {
 				array("#SECTION_ID#", "#ELEMENT_CODE#", "#ELEMENT_ID#"),
 				array($arItemProd["IBLOCK_SECTION_ID"], $arItemProd["CODE"], $arItemProd["ID"]),
 				$arParams["DETAIL_TEMPLATE_LINK"]
-			).".php"
+			).".php",
+			"EDIT_LINK" => $arButtons["edit"]["edit_element"]["ACTION_URL"],
+			"DELETE_LINK" => $arButtons["edit"]["delete_element"]["ACTION_URL"],
 		);
 		foreach ($arSectionAll[$arItemProd["IBLOCK_SECTION_ID"]]["NEWS"] as $arNewsId){
 			$arNewsAll[$arNewsId]["PRODUCTS"][] = $arItemProd["ID"];
@@ -159,6 +168,14 @@ if ($this->StartResultCache(false, array(isset($_GET["F"])))) {
 	$arResult["COUNT_PRODUCTS"] = count($arProductAll);
 
 	$arResult["FILTER_LINK"] = $APPLICATION->GetCurPage()."?F=Y";
+
+	$arButtons = CIBlock::GetPanelButtons(
+		$iblockPoduct,
+		0,
+		0,
+		array("SECTION_BUTTONS"=>false, "SESSID"=>false)
+	);
+	$arResult["ADD_ELEMENT_LINK"] = $arButtons["edit"]["add_element"]["ACTION_URL"];
 
 	$this->setResultCacheKeys(array("COUNT_PRODUCTS"));
 
