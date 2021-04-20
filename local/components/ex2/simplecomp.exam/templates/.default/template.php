@@ -5,7 +5,7 @@
 				href="<?= $arResult["FILTER_LINK"] ?>"><?= $arResult["FILTER_LINK"] ?></a></p>
 <? endif; ?>
 
----
+<p><?=GetMessage("LABEL_TIMES").time()?></p>
 
 <p><b><?= GetMessage("SIMPLECOMP_EXAM2_CAT_TITLE") ?></b></p>
 <? $this->AddEditAction('iblock_' . $arResult["IBLOCK_ID"], $arResult['ADD_ELEMENT_LINK'], CIBlock::GetArrayByID($arResult["IBLOCK_ID"], "ELEMENT_ADD")); ?>
