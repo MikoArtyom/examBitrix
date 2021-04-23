@@ -81,13 +81,16 @@ IncludeTemplateLangFile(__FILE__);
 					<div><img src="<?= SITE_TEMPLATE_PATH ?>/images/head.jpg" alt=""/></div>
 				</td>
 				<td id="banner-slogan">
-					<?
-					$APPLICATION->IncludeFile(
-						SITE_DIR . "include/motto.php",
-						Array(),
-						Array("MODE" => "html")
-					);
-					?>
+					<?$APPLICATION->IncludeComponent(
+						"bitrix:main.include",
+						"",
+						Array(
+							"AREA_FILE_SHOW" => "file",
+							"AREA_FILE_SUFFIX" => "",
+							"EDIT_TEMPLATE" => "",
+							"PATH" => "include/motto.php"
+						)
+					);?>
 				</td>
 			</tr>
 		</table>
@@ -113,22 +116,22 @@ IncludeTemplateLangFile(__FILE__);
 					"ACTIVE_COMPONENT" => "Y"
 				)
 			); ?>
-			<div class="content-block">
-				<div class="content-block-inner">
-					<h3><?= GetMessage('CFT_NEWS') ?></h3>
-					<?
-					$APPLICATION->IncludeFile(
-						SITE_DIR . "include/news.php",
-						Array(),
-						Array("MODE" => "html")
-					);
-					?>
-				</div>
-			</div>
+<!--			<div class="content-block">-->
+<!--				<div class="content-block-inner">-->
+
+<!--					--><?//
+//					$APPLICATION->IncludeFile(
+//						SITE_DIR . "include/news.php",
+//						Array(),
+//						Array("MODE" => "html")
+//					);
+//					?>
+<!--				</div>-->
+<!--			</div>-->
+
 
 			<div class="content-block">
 				<div class="content-block-inner">
-
 					<h3><?= GetMessage("CFT_LANG_CHOICE") ?></h3>
 					<? $APPLICATION->IncludeComponent(
 						"bitrix:main.site.selector",
@@ -139,10 +142,14 @@ IncludeTemplateLangFile(__FILE__);
 							"SITE_LIST" => array("*all*")
 						)
 					); ?>
+
 				</div>
 			</div>
+
+
 			<div class="content-block">
 				<div class="content-block-inner">
+
 					<?
 					$APPLICATION->IncludeComponent("bitrix:search.form", "flat", Array(
 						"PAGE" => "#SITE_DIR#search/",
@@ -152,7 +159,6 @@ IncludeTemplateLangFile(__FILE__);
 					?>
 				</div>
 			</div>
-
 
 			<div style="color:red; margin: 34px 15px 35px 15px">
 				<?= $APPLICATION->ShowProperty("EXTREMUM_PRICE") ?>
