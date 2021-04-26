@@ -36,6 +36,7 @@
 		"ELEMENT_CODE" => $arResult["VARIABLES"]["ELEMENT_CODE"],
 		"IBLOCK_URL" => $arResult["FOLDER"].$arResult["URL_TEMPLATES"]["news"],
 		"CANONICAL" => $arParams["CANONICAL"],
+		"SET_AJAX_COMPLAINT" => $arParams["SET_AJAX_COMPLAINT"],
 
 	),
 	$component

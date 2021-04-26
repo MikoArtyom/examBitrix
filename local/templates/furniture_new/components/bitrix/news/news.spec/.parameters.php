@@ -11,4 +11,9 @@ $arTemplateParameters = array(
 		"NAME" => GetMessage("CANONICAL"),
 		"TYPE" => "STRING",
 	),
+	"SET_AJAX_COMPLAINT" => array(
+		"NAME" => GetMessage("NAME_SET_AJAX_COMPLAINT"),
+		"TYPE" => "CHECKBOX",
+		"DEFAULT" => "N"
+	)
 );
